@@ -3,42 +3,42 @@ package org.app.marchealeatoire;
 import lombok.Data;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class Marcheur {
-    private Lieux positionActuelle ;
-    private Set<Lieux> marche;
+    private String positionActuelle;
 
-    public Marcheur(Lieux positionInitiale) {
-        this.positionActuelle = positionInitiale;
-        this.marche = new HashSet<>();
-        this.marche.add(positionInitiale);
-    }
-
-    public void marcheAleatoirement(Lieux destination) {
-        Random random = new Random();
-
-        while (!positionActuelle.equals(destination)) {
-            Map<String, Lieux> ruesDisponibles = positionActuelle.getRues();
-            if (ruesDisponibles.isEmpty()) {
-                System.out.println("Route indisponible depuis " + positionActuelle.getNom());
-                return;
+    public void marcheAleatoirement(String lieuxDeDepart, String destination){
+        Environnement environnement = new Environnement();
+        for( Rues rues : environnement.getListDesRues()) {
+            if(!rues.equals(lieuxDeDepart)) {
+                System.out.println("Rue indisponible");
             }
+            positionActuelle = lieuxDeDepart;
+            Random random = new Random();
 
-            List<Lieux> destinationsDisponibles = new ArrayList<>(ruesDisponibles.values());
-            positionActuelle = destinationsDisponibles.get(random.nextInt(destinationsDisponibles.size()));
-            marche.add(positionActuelle);
+            while (!positionActuelle.equals(destination)) {
+                List<Rues> ruesVoisines = environnement.getListDesRues()
+                        .stream().filter(e -> e.getNomDeRue().equals(positionActuelle))
+                        .collect(Collectors.toList());
+
+                if (ruesVoisines.isEmpty()) {
+                    System.out.println("Aucune rue voisine trouvée depuis la position actuelle.");
+                    return;
+                }
+
+
+                Rues rueSuivante = ruesVoisines.get(random.nextInt(ruesVoisines.size()));
+                positionActuelle = rueSuivante.getNomDeRue();
+
+
+                if (positionActuelle.equals(destination)) {
+                    System.out.println(destination);
+
+                }
+            }
         }
-
-        System.out.println("Marche complétée : " + marche);
-    }
-
-
-    public boolean aAtteintLieu(String nomLieu) {
-        return positionActuelle.getNom().equals(nomLieu);
-    }
-
-    public Set<Lieux> getMarche() {
-        return marche;
-    }
+   }
 }
+

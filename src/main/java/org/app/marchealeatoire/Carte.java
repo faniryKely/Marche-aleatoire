@@ -1,34 +1,34 @@
 package org.app.marchealeatoire;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Data
+@NoArgsConstructor
 public class Carte {
+    private Set<Lieux> listDesLieux = new HashSet<>();
 
-    private Map<String, Lieux> lieux;
-
-    public Carte () {
-        this.lieux = new HashMap<>();
+    public void ajouterLieux(Lieux lieux) {
+        listDesLieux.add(lieux);
     }
 
-    public Lieux obtenirLieux (String nom) {
-        return  lieux.get(nom);
-    }
-
-
-    public void ajouterLieu(String nom) {
-        lieux.put(nom, lieux.get(nom));
-    }
-
-    public void ajouterRue(String nomRue, String nomLieuOrigine, String nomLieuDestination) {
-        Lieux origine = lieux.get(nomLieuOrigine);
-        Lieux destination = lieux.get(nomLieuDestination);
-        if (origine != null && destination != null) {
-            origine.ajouterRue(nomRue, destination);
+    public Lieux prendreLieuxParNom(String nom) {
+        for( Lieux lieux : listDesLieux) {
+            if( lieux.equals(nom)) {
+                return lieux;
+            }
         }
+        return null;
     }
+
+    public void creerRueConnectee( String nomDeRue, String nomDeLieuxInitial, String nomLieuxDestination) {
+        Lieux positionInitial = prendreLieuxParNom(nomDeLieuxInitial);
+        Lieux positionDestination = prendreLieuxParNom(nomLieuxDestination);
+        Rues nouveauRue = new Rues(nomDeRue);
+    }
+
 }
